@@ -76,7 +76,9 @@
 #include "ssherr.h"
 #include "compat.h"
 #include "channels.h"
-
+#ifdef ENABLE_AUTHREPORT
+#include "authreport.h"
+#endif
 /* import */
 extern ServerOptions options;
 extern struct include_list includes;
@@ -342,6 +344,11 @@ auth_maxtries_exceeded(struct ssh *ssh)
 	    authctxt->user,
 	    ssh_remote_ipaddr(ssh),
 	    ssh_remote_port(ssh));
+#ifdef ENABLE_AUTHREPORT
+	debug_f("Reporting authentication result: %s",
+	      authctxt->success ? "success" : "failed");
+	report_auth_result(ssh);
+#endif
 	ssh_packet_disconnect(ssh, "Too many authentication failures");
 	/* NOTREACHED */
 }

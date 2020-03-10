@@ -128,6 +128,9 @@
 #include "sk-api.h"
 #include "srclimit.h"
 #include "dh.h"
+#ifdef ENABLE_AUTHREPORT
+#include "authreport.h"
+#endif
 
 /* Re-exec fds */
 #define REEXEC_DEVCRYPTO_RESERVED_FD	(STDERR_FILENO + 1)
@@ -2021,6 +2024,11 @@ main(int ac, char **av)
 	    options.log_facility, log_stderr);
 	for (i = 0; i < options.num_log_verbose; i++)
 		log_verbose_add(options.log_verbose[i]);
+
+#ifdef ENABLE_AUTHREPORT
+	/* Initiallize user authorization result reporting */
+	init_auth_report(options.auth_report_socket);
+#endif
 
 	/*
 	 * If not in debugging mode, not started from inetd and not already

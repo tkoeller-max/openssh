@@ -229,6 +229,9 @@ typedef struct {
 	int	expose_userauth_info;
 	u_int64_t timing_secret;
 	char   *sk_provider;
+#ifdef ENABLE_AUTHREPORT
+	char   *auth_report_socket;
+#endif
 }       ServerOptions;
 
 /* Information about the incoming connection as used by Match */

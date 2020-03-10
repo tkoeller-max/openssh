@@ -58,6 +58,9 @@
 #endif
 #include "monitor_wrap.h"
 #include "digest.h"
+#ifdef ENABLE_AUTHREPORT
+#include "authreport.h"
+#endif
 
 /* import */
 extern ServerOptions options;
@@ -175,6 +178,11 @@ do_authentication2(struct ssh *ssh)
 	ssh_dispatch_init(ssh, &dispatch_protocol_error);
 	ssh_dispatch_set(ssh, SSH2_MSG_SERVICE_REQUEST, &input_service_request);
 	ssh_dispatch_run_fatal(ssh, DISPATCH_BLOCK, &authctxt->success);
+#ifdef ENABLE_AUTHREPORT
+	debug_f("Reporting authentication result: %s",
+	      authctxt->success ? "success" : "failed");
+	report_auth_result(ssh);
+#endif
 	ssh->authctxt = NULL;
 }
 

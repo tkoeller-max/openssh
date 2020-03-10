@@ -195,6 +195,9 @@ initialize_server_options(ServerOptions *options)
 	options->fingerprint_hash = -1;
 	options->disable_forwarding = -1;
 	options->expose_userauth_info = -1;
+#ifdef ENABLE_AUTHREPORT
+	options->auth_report_socket = NULL;
+#endif
 }
 
 /* Returns 1 if a string option is unset or set to "none" or 0 otherwise. */
@@ -470,6 +473,9 @@ fill_default_server_options(ServerOptions *options)
 		CLEAR_ON_NONE(options->host_key_files[i]);
 	for (i = 0; i < options->num_host_cert_files; i++)
 		CLEAR_ON_NONE(options->host_cert_files[i]);
+#ifdef ENABLE_AUTHREPORT
+	CLEAR_ON_NONE(options->auth_report_socket);
+#endif
 #undef CLEAR_ON_NONE
 
 	/* Similar handling for AuthenticationMethods=any */
@@ -517,6 +523,7 @@ typedef enum {
 	sStreamLocalBindMask, sStreamLocalBindUnlink,
 	sAllowStreamLocalForwarding, sFingerprintHash, sDisableForwarding,
 	sExposeAuthInfo, sRDomain, sPubkeyAuthOptions, sSecurityKeyProvider,
+	sAuthReportSocket,
 	sDeprecated, sIgnore, sUnsupported
 } ServerOpCodes;
 
@@ -676,6 +683,7 @@ static struct {
 	{ "rdomain", sRDomain, SSHCFG_ALL },
 	{ "casignaturealgorithms", sCASignatureAlgorithms, SSHCFG_ALL },
 	{ "securitykeyprovider", sSecurityKeyProvider, SSHCFG_GLOBAL },
+	{ "authreportsocket", sAuthReportSocket, SSHCFG_ALL },
 	{ NULL, sBadOption, 0 }
 };
 
@@ -2432,6 +2440,12 @@ process_server_config_line_depth(ServerOptions *options, char *line,
 			*charptr = xstrdup(arg);
 		break;
 
+#ifdef ENABLE_AUTHREPORT
+	case sAuthReportSocket:
+		charptr = &options->auth_report_socket;
+		goto parse_filename;
+#endif
+
 	case sDeprecated:
 	case sIgnore:
 	case sUnsupported:
@@ -2943,6 +2957,9 @@ dump_config(ServerOptions *o)
 	dump_cfg_string(sPubkeyAcceptedAlgorithms, o->pubkey_accepted_algos);
 #if defined(__OpenBSD__) || defined(HAVE_SYS_SET_PROCESS_RDOMAIN)
 	dump_cfg_string(sRDomain, o->routing_domain);
+#endif
+#ifdef ENABLE_AUTHREPORT
+	dump_cfg_string(sAuthReportSocket, o->auth_report_socket);
 #endif
 
 	/* string arguments requiring a lookup */

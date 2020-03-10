@@ -231,6 +231,14 @@ is enabled),
 .Qq password
 and
 .Qq publickey .
+.It Cm AuthReportSocket
+Specifies the file system path of a unix domain socket. For every user
+authentication request, sshd will report the result by sending a record
+containing the client's address to this socket.
+This is meant to provide a means of blacklisting hosts that attempt to
+break into the system by trying long lists of common passwords. A
+literal 'none' given for this parameter disables reporting of authorization
+failures.
 .It Cm AuthorizedKeysCommand
 Specifies a program to be used to look up the user's public keys.
 The program must be owned by root, not writable by group or others and

@@ -1,0 +1,38 @@
+The authentication report feature
+---------------------------------
+There is an optional feature named 'authentication reporting', enabled
+by the --enable-authreport configuration switch. This causes sshd to
+report the outcome of every user authentication requested by a client to
+an external program for further processing. The intention is to allow
+for things like blacklisting clients that attempt to break into the system
+by trying large lists of common user names. Consult your log files if you
+don't know what I'm talking about.
+
+Use of this feature requires the external authentication result processor
+to set up a unix domain socket which sshd will then send report records
+to. There is a configuration option named AuthReportSocket in sshd_config
+which has to be set to the file system path of that socket, (or 'none',
+the default). Unless this option is set to 'none', sshd will attempt to
+access the socket during startup. If this fails, startup is aborted, so
+the external processor has to be started before sshd. Communication style
+is connectionless, so the receiving socket has to be of the SOCK_DGRAM
+variety.
+
+When sshd is up and running, every time a client connects and requests
+user authentication, a record containing the authentication result is
+sent. This record contains an ASCII string consisting of four parts
+separated by blanks, formatted like
+
+	"RES=reject ADDR=::1 PORT=52592 USER=goofy"
+
+RES is set to the authentication result, encoded as either "accept" or
+"reject". ADDR is the address of the requesting host, PORT is its source
+port number. Finally, USER contains the user name for which authentication
+was requested. The authreport-test folder contains a sample program
+illustrating the feature.
+
+Care has been taken to design this feature in a way that it interferes
+with sshd's normal operation as little as possible. The socket used to
+communicate to the external processor is set to nonblocking mode, and
+any communiction failure will be ignored.
+

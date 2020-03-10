@@ -3484,6 +3484,18 @@ else
 fi
 AC_SUBST([SSH_PRIVSEP_USER])
 
+AUTHREPORT_MSG="no"
+AC_ARG_ENABLE([authreport],
+	[  --enable-authreport     Enable authentication result reporting ],
+	[
+		if test "x$enableval" = "xyes" ; then
+			AC_DEFINE([ENABLE_AUTHREPORT], [1],
+				  [Enable authentication failure reporting])
+			AUTHREPORT_MSG="yes"
+		fi
+	]
+)
+
 if test "x$have_linux_no_new_privs" = "x1" ; then
 AC_CHECK_DECL([SECCOMP_MODE_FILTER], [have_seccomp_filter=1], , [
 	#include <sys/types.h>
@@ -5612,6 +5624,7 @@ echo "              Random number source: $RAND_MSG"
 echo "             Privsep sandbox style: $SANDBOX_STYLE"
 echo "                   PKCS#11 support: $enable_pkcs11"
 echo "                  U2F/FIDO support: $enable_sk"
+echo "   Authentication result reporting: $AUTHREPORT_MSG"
 
 echo ""
 

@@ -33,6 +33,7 @@
 #StrictModes yes
 #MaxAuthTries 6
 #MaxSessions 10
+#AuthReportSocket none
 
 #PubkeyAuthentication yes
 
