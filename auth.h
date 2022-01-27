@@ -40,6 +40,8 @@
 #include <krb5.h>
 #endif
 
+#include "hostfile.h"
+
 struct passwd;
 struct ssh;
 struct sshbuf;

@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdio.h>
+#include <stdint.h>
 
 /* Data structure for representing a forwarding request. */
 struct Forward {
